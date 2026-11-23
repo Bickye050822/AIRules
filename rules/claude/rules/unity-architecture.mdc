@@ -1,0 +1,42 @@
+﻿---
+description: Unity游戏架构约束，Actor-Component、事件总线、FSM状态机，避免单例滥用
+globs: ["**/*.cs"]
+alwaysApply: false
+---
+
+# Unity 游戏架构约束
+
+## 1. 单例使用原则
+
+- 尽量少用 `MonoBehaviour` 单例；优先静态类、事件总线、`ServiceLocator`。
+- 若必须用 Mono 单例，须处理场景切换销毁、`DontDestroyOnLoad` 重复实例问题。
+
+## 2. Actor-Component 模式
+
+- `Actor` 作为载体，持有多个 `Component`；`Component` 不直接互相依赖。
+- `Component` 通过 `Actor` 获取其他组件；禁止 `Component` 直接查找其他 `Component`。
+- 数据与表现分离：`Component` 只负责本模块逻辑。
+
+## 3. 事件总线 EventBus
+
+- 使用强类型事件，避免字符串消息。
+- 对象销毁时必须取消事件订阅，防止内存泄漏。
+
+## 4. FSM 有限状态机
+
+- `State` 类只负责状态逻辑，状态切换交给 FSM 控制器。
+- 每个状态实现 `Enter` / `Update` / `Exit`；禁止用大量 `if-else` 堆叠状态逻辑。
+
+## 5. 避免强耦合
+
+- 禁止大量 `GameObject.Find` / `GetComponent` 跨对象硬找。
+- 优先引用赋值、事件、消息传递。
+
+## 6. 分层
+
+- 数据层、逻辑层、表现层分开。
+- UI 逻辑不要混杂业务/战斗逻辑。
+
+## 7. 资源管理
+
+- 使用 Addressables（Address）管理资源加载与释放，避免硬引用 Resources 或散落的路径字符串。
